@@ -11,7 +11,8 @@
 enum Tags {
 	TUndefined,
 	TPaddle,
-	TBrick
+	TBrick,
+	TScore
 };
 
 #endif /* Tags_h */

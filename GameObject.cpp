@@ -1,16 +1,6 @@
 #include "Config.hpp"
 #include "GameObject.hpp"
 
-void GameObject::Render(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
-	SDL_RenderFillRect(renderer, &rect);
-}
-
-void GameObject::SetPosition(int x, int y) {
-	rect.x = x;
-	rect.y = y;
-}
-
 void GameObject::ApplyVelocity(float deltaTime) {
 	SDL_FPoint move_direction_normalised = {
 		(float) move_direction.x,
@@ -41,7 +31,6 @@ void GameObject::ApplyVelocity(float deltaTime) {
 		rect.x -= move.x;
 		if (GetIntersectingWith(gameobject)) {
 			rect.y -= move.y;
-			std::cout << rect.y << " " << gameobject->rect.y+gameobject->rect.h << std::endl;
 			if (rect.y >= gameobject->rect.y+gameobject->rect.h) {
 				info.from_up = true;
 			} else {
@@ -68,38 +57,28 @@ void GameObject::ApplyVelocity(float deltaTime) {
 	
 	// Keep in bounds
 	ExitWindowInfo info;
-	bool exit_left = rect.x < 0;
-	bool exit_right = rect.x + rect.w > window_width;
-	bool exit_up = rect.y < 0;
-	bool exit_down = rect.y + rect.h > window_height;
-	
-	bool exit_horisontal = exit_left || exit_right;
-	bool exit_vertical = exit_up || exit_down;
-	bool exit_window = exit_horisontal || exit_vertical;
 
 	if (rect.x < 0) {
 		rect.x = 0;
+		info.from_left = true;
 	} else if (rect.x + rect.w > window_width) {
 		rect.x = window_width - rect.w;
+		info.from_right = true;
 	}
 	
 	if (rect.y < 0) {
 		rect.y = 0;
+		info.from_up = true;
 	} else if (rect.y + rect.h > window_height) {
 		rect.y = window_height - rect.h;
+		info.from_down = true;
 	}
 	
-	if (exit_window) {
-		info.horisontal = exit_horisontal;
-		info.vertical = exit_vertical;
+	if (info.any()) {
 		OnExitWindow(info);
 	}
 }
 
 bool GameObject::GetIntersectingWith(GameObject *other) {
 	return SDL_HasIntersection(&rect, &other->rect);
-}
-
-bool GameObject::SameDirectionAs(GameObject *other) {
-	return move_direction.x == other->move_direction.x && move_direction.y == other->move_direction.y;
 }

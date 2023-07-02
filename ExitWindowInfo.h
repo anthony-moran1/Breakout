@@ -9,8 +9,22 @@
 #define ExitWindowInfo_h
 
 struct ExitWindowInfo {
-	bool horisontal = false;
-	bool vertical = false;
+	bool from_left = false;
+	bool from_right = false;
+	bool from_up = false;
+	bool from_down = false;
+	
+	bool horisontal() {
+		return from_left || from_right;
+	}
+	
+	bool vertical() {
+		return from_up || from_down;
+	}
+	
+	bool any() {
+		return horisontal() || vertical();
+	}
 };
 
 #endif /* ExitWindowInfo_h */

@@ -11,9 +11,15 @@
 #include "GameObject.hpp"
 
 class Ball : public GameObject {
+private:
+	SDL_Point spawn_point;
+	
 public:
 	Ball();
 	~Ball();
+	
+	void Reset();
+	void SetPosition(int x, int y, bool spawn=true);
 	
 	void OnCollision(GameObject* other, CollisionInfo info) override;
 	void OnExitWindow(ExitWindowInfo info) override;

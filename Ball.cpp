@@ -16,15 +16,38 @@ Ball::Ball() {
 	colour.b = 0x88;
 	colour.a = 0xFF;
 	
+	SetPosition(
+				(window_width - rect.w) / 2,
+				(window_height - rect.h) / 3 * 2
+				);
 	rect.w = 8;
 	rect.h = 8;
-	rect.x = (window_width - rect.w) / 2;
-	rect.y = (window_height - rect.h) / 3 * 2;
 	
 	move_direction.x = -1;
 	move_direction.y = 1;
 	
 	speed = 200;
+}
+
+void Ball::Reset() {
+	if (lives <= 0) {
+		remove_object(this);
+		return;
+	}
+	
+	lives--;
+	rect.x = spawn_point.x;
+	rect.y = spawn_point.y;
+}
+
+void Ball::SetPosition(int x, int y, bool spawn) {
+	GameObject::SetPosition(x, y);
+	
+	if (!spawn) {
+		return;
+	}
+	spawn_point.x = x;
+	spawn_point.y = y;
 }
 
 void Ball::OnCollision(GameObject* other, CollisionInfo info) {
@@ -33,54 +56,56 @@ void Ball::OnCollision(GameObject* other, CollisionInfo info) {
 			if (info.vertical()) {
 				move_direction.y *= -1;
 			} else {
-				if (SameDirectionAs(other)) {
-					return;
-				}
 				move_direction.x *= -1;
-			}
-			
-			if (info.from_left) {
-				rect.x = other->rect.x+other->rect.w;
-			}
-			if (info.from_right) {
-				rect.x = other->rect.x-rect.w;
-			}
-			if (info.from_up) {
-				rect.y = other->rect.y+other->rect.h;
-				std::cout << "from up\n";
-			}
-			if (info.from_down) {
-				rect.y = other->rect.y-rect.h;
-				std::cout << "from down\n";
 			}
 			break;
 			
 		case TBrick:
 			if (info.vertical()) {
 				move_direction.y *= -1;
-			} else {
-				if (SameDirectionAs(other)) {
-					return;
-				}
+			}
+			if (info.horisontal()){
 				move_direction.x *= -1;
 			}
 			
-			remove_gameobject(other);
-			score++;
-			std::cout << "Score: " << score << std::endl;
+			brick_hit(other);
 			break;
 			
-		case TUndefined:
+		default:
 			break;
+	}
+	
+	if (other->solid) {
+		if (info.from_left) {
+			rect.x = other->rect.x+other->rect.w;
+		}
+		if (info.from_right) {
+			rect.x = other->rect.x-rect.w;
+		}
+		if (info.from_up) {
+			rect.y = other->rect.y+other->rect.h;
+		}
+		if (info.from_down) {
+			rect.y = other->rect.y-rect.h;
+		}
 	}
 }
 
 void Ball::OnExitWindow(ExitWindowInfo info) {
-	if (info.horisontal) {
+	if (info.horisontal()) {
 		move_direction.x *= -1;
 	}
 	
-	if (info.vertical) {
+	if (info.from_left) {
+		rect.x = 0;
+	} else if (info.from_right) {
+		rect.x = window_width-rect.w;
+	}
+	
+	if (info.from_up) {
+		rect.y = 0;
 		move_direction.y *= -1;
+	} else if (info.from_down) {
+		Reset();
 	}
 }

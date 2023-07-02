@@ -1,22 +1,37 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#include <string>
 
 #include "GameObject.hpp"
 #include "Config.hpp"
 #include "Paddle.hpp"
 #include "Brick.hpp"
 #include "Ball.hpp"
+#include "TextScore.hpp"
 
-int main() {
+int main() {	
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cout << "Failed to initialise the SDL2 library\n";
         return -1;
     }
-
+	
+	if (TTF_Init() == -1) {
+		std::cout << "Failed to initialise the TTF library\n";
+		return -1;
+	}
+	
+	font = TTF_OpenFont(font_filepath.c_str(), 28);
+	if (font == NULL) {
+		std::cout << "Could not load font from file path: " << font_filepath << std::endl;
+		return -1;
+	}
+	
     SDL_Window *window = SDL_CreateWindow("SDL2 Window",
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    window_width, window_height, 0);
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		window_width, window_height, 0
+	);
 
     if (!window) {
         std::cout << "Failed to create window\n";
@@ -27,9 +42,11 @@ int main() {
 	
     Paddle* paddle = new Paddle();
 	Ball* ball = new Ball();
+	TextScore* text_score = new TextScore(renderer);
 	
-	GameObjects.push_back(paddle);
-	GameObjects.push_back(ball);
+	add_gameobject(paddle);
+	add_gameobject(ball);
+	add_object(text_score);
 	
 	// Spawn bricks
 	// Calculating number of bricks to fill area
@@ -62,7 +79,7 @@ int main() {
 			int brick_x = BRICK_START.x + BRICK_PADDING_WALL.x + (Brick::Size.x + BRICK_PADDING_BRICK.x + SPARE_SPACE_INDIVIDUAL.x) * col + SPARE_SPACE_INDIVIDUAL.x / 2;
 			brick = new Brick();
 			brick->SetPosition(brick_x, brick_y);
-			GameObjects.push_back(brick);
+			add_gameobject(brick);
 		}
 	}
 	
@@ -91,8 +108,8 @@ int main() {
         }
 		
 		// Updating
-		for (GameObject* gameobject : GameObjects) {
-			gameobject->Update(delta_time);
+		for (Object* object : Objects) {
+			object->Update(delta_time);
 		}
 		
 		// Apply Velocity
@@ -104,8 +121,8 @@ int main() {
 		SDL_SetRenderDrawColor(renderer, background_colour.r, background_colour.g, background_colour.b, background_colour.a);
 		SDL_RenderClear(renderer);
 		
-		for (GameObject* gameobject : GameObjects) {
-			gameobject->Render(renderer);
+		for (Object* object : Objects) {
+			object->Render(renderer);
 		}
 		
 //		SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
@@ -116,6 +133,9 @@ int main() {
 
     SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
+	
+	TTF_CloseFont(font);
+	TTF_Quit();
     SDL_Quit();
 
     return 0;
