@@ -15,6 +15,8 @@ public:
 	SDL_Point move_direction;
 	bool solid = true;
 	
+	GameObject();
+	
 	void ApplyVelocity(float deltaTime);
 	bool GetIntersectingWith(GameObject* other);
 	virtual void OnCollision(GameObject* other, CollisionInfo info) {};

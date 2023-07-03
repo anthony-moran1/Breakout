@@ -6,6 +6,7 @@
 //
 
 #include <algorithm>
+#include <map>
 #include "Config.hpp"
 
 int window_width = 480;
@@ -13,27 +14,37 @@ int window_height = 720;
 
 SDL_Colour background_colour = {0xEE, 0xEE, 0xEE, 0xFF};
 
-std::vector<Object*> Objects;
+std::vector<UIObject*> UIObjects;
 std::vector<GameObject*> GameObjects;
 
 void add_object(Object* object) {
-	Objects.push_back(object);
+	switch (object->object_type) {
+		case OUI:
+			UIObjects.push_back(dynamic_cast<UIObject*>(object));
+			break;
+		case OGame:
+			GameObjects.push_back(dynamic_cast<GameObject*>(object));
+			break;
+		case OUndefined:
+			break;
+	}
 }
+
 void remove_object(Object* object) {
-	Objects.erase(std::remove(Objects.begin(), Objects.end(), object), Objects.end());
+	switch (object->object_type) {
+		case OUI:
+			UIObjects.erase(std::remove(UIObjects.begin(), UIObjects.end(), object), UIObjects.end());
+			break;
+		case OGame:
+			GameObjects.erase(std::remove(GameObjects.begin(), GameObjects.end(), object), GameObjects.end());
+			break;
+		case OUndefined:
+			break;
+	}
 }
 
-void add_gameobject(GameObject* gameobject) {
-	add_object(gameobject);
-	GameObjects.push_back(gameobject);
-}
-void remove_gameobject(GameObject* gameobject) {
-	remove_object(gameobject);
-	GameObjects.erase(std::remove(GameObjects.begin(), GameObjects.end(), gameobject), GameObjects.end());
-}
-
-Object* get_object_by_tag(Tags tag) {
-	for (Object* object : Objects) {
+UIObject* get_uiobject_by_tag(Tag tag) {
+	for (UIObject* object : UIObjects) {
 		if (object->tag != tag) {
 			continue;
 		}
@@ -42,20 +53,23 @@ Object* get_object_by_tag(Tags tag) {
 	return nullptr;
 }
 
+GameObject* get_gameobject_by_tag(Tag tag) {
+	for (GameObject* gameobject : GameObjects) {
+		if (gameobject->tag != tag) {
+			continue;
+		}
+		return gameobject;
+	}
+	return nullptr;
+}
+
 int score = 0;
 int lives = 3;
 
-TextScore* text_score = nullptr;
-TextScore* get_text_score() {
-	if (text_score == nullptr) {
-		return dynamic_cast<TextScore*>(get_object_by_tag(TScore));
-	}
-	return text_score;
-}
+LabelScore* label_score = nullptr;
 
 void brick_hit(GameObject* brick) {
-	remove_gameobject(brick);
+	remove_object(brick);
 	score++;
-	get_text_score()->brick_hit_received();
+	label_score->brick_hit_received();
 }
-std::vector<void (*)()> brick_hit_delegate;

@@ -1,6 +1,10 @@
 #include "Config.hpp"
 #include "GameObject.hpp"
 
+GameObject::GameObject() {
+	object_type = OGame;
+}
+
 void GameObject::ApplyVelocity(float deltaTime) {
 	SDL_FPoint move_direction_normalised = {
 		(float) move_direction.x,

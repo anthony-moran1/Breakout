@@ -16,12 +16,8 @@ Ball::Ball() {
 	colour.b = 0x88;
 	colour.a = 0xFF;
 	
-	SetPosition(
-				(window_width - rect.w) / 2,
-				(window_height - rect.h) / 3 * 2
-				);
-	rect.w = 8;
-	rect.h = 8;
+	SetPosition(window_width / 2, window_height / 3 * 2);
+	SetSize(8, 8);
 	
 	move_direction.x = -1;
 	move_direction.y = 1;

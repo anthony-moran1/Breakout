@@ -12,11 +12,13 @@ SDL_Point Brick::Size = {48, 16};
 Brick::Brick() {
 	tag = TBrick;
 
-	rect.w = Brick::Size.x;
-	rect.h = Brick::Size.y;
+	SetSize(Brick::Size.x, Brick::Size.y);
 	
 	colour.r = 0xCC;
 	colour.g = 0xCC;
 	colour.b = 0xCC;
 	colour.a = 0xFF;
+	
+	anchor.x = left;
+	anchor.y = up;
 }

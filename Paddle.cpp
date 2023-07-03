@@ -14,11 +14,9 @@ Paddle::Paddle() {
 	colour.r = 0;
 	colour.g = 0;
 	colour.b = 0;
-
-	rect.w = 96;
-	rect.h = 8;
-	rect.x = (window_width - rect.w) / 2;
-	rect.y = window_height * .9 - rect.h;
+	
+	SetPosition(window_width / 2, window_height * .9);
+	SetSize(96, 8);
 }
 
 void Paddle::Event(SDL_Event event) {

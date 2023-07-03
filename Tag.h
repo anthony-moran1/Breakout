@@ -8,7 +8,7 @@
 #ifndef Tags_h
 #define Tags_h
 
-enum Tags {
+enum Tag {
 	TUndefined,
 	TPaddle,
 	TBrick,
