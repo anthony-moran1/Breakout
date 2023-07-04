@@ -10,7 +10,7 @@
 #include "Config.hpp"
 
 int window_width = 480;
-int window_height = 720;
+int window_height = 840;
 
 SDL_Colour background_colour = {0xEE, 0xEE, 0xEE, 0xFF};
 
@@ -66,6 +66,7 @@ GameObject* get_gameobject_by_tag(Tag tag) {
 int score = 0;
 int lives = 3;
 
+Paddle* paddle = nullptr;
 LabelScore* label_score = nullptr;
 
 void brick_hit(GameObject* brick) {

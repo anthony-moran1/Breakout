@@ -13,10 +13,15 @@
 class Ball : public GameObject {
 private:
 	SDL_Point spawn_point;
+	int min_speed = 200;
+	int max_speed = 800;
 	
 public:
 	Ball();
 	~Ball();
+	
+	void Event(SDL_Event event) override;
+	void Update(float deltaTime) override;
 	
 	void Reset();
 	void SetPosition(int x, int y, bool spawn=true);

@@ -10,6 +10,7 @@
 class GameObject : public Object {
 protected:
 	int speed = 200;
+	bool freeze = false;
 
 public:
 	SDL_Point move_direction;

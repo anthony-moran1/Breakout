@@ -12,6 +12,7 @@
 #include <string>
 
 #include "UIObject.hpp"
+class UIButton;
 
 extern std::string font_filepath;
 extern TTF_Font* font;
@@ -19,7 +20,7 @@ extern TTF_Font* font;
 class UILabel : public UIObject {
 protected:
 	SDL_Colour text_colour = {0x22, 0x22, 0x22, 0xFF};
-	SDL_Rect text_rect;
+	SDL_Point text_size;
 	
 	SDL_Surface* textSurface;
 	SDL_Texture* textTexture;
@@ -27,6 +28,7 @@ protected:
 	
 public:
 	UILabel(std::string text);
+	UIButton* parent = nullptr;
 
 	void Render(SDL_Renderer* renderer) override;
 	

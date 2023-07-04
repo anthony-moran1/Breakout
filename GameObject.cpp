@@ -6,6 +6,10 @@ GameObject::GameObject() {
 }
 
 void GameObject::ApplyVelocity(float deltaTime) {
+	if (freeze) {
+		return;
+	}
+	
 	SDL_FPoint move_direction_normalised = {
 		(float) move_direction.x,
 		(float) move_direction.y

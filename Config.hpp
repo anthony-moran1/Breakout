@@ -12,6 +12,7 @@
 #include <vector>
 #include "UIObject.hpp"
 #include "GameObject.hpp"
+#include "Paddle.hpp"
 #include "LabelScore.hpp"
 #include "Tag.h"
 #include "ObjectType.h"
@@ -32,6 +33,7 @@ extern GameObject* get_gameobject_by_tag(Tag tag);
 extern int score;
 extern int lives;
 
+extern Paddle* paddle;
 extern LabelScore* label_score;
 extern void brick_hit(GameObject* brick);
 

@@ -17,6 +17,9 @@ Paddle::Paddle() {
 	
 	SetPosition(window_width / 2, window_height * .9);
 	SetSize(96, 8);
+	
+	paddle = this;
+	speed = 250;
 }
 
 void Paddle::Event(SDL_Event event) {

@@ -16,13 +16,42 @@ Ball::Ball() {
 	colour.b = 0x88;
 	colour.a = 0xFF;
 	
-	SetPosition(window_width / 2, window_height / 3 * 2);
+	SetPosition(window_width / 2, window_height / 7 * 4);
 	SetSize(8, 8);
 	
 	move_direction.x = -1;
 	move_direction.y = 1;
 	
 	speed = 200;
+	freeze = true;
+}
+
+void Ball::Event(SDL_Event event) {
+	if (!freeze) {
+		return;
+	}
+	
+	if (event.type != SDL_KEYDOWN) {
+		return;
+	}
+	
+	if (event.key.keysym.sym != SDLK_LEFT && event.key.keysym.sym != SDLK_RIGHT) {
+		return;
+	}
+	
+	if (event.key.repeat > 0) {
+		return;
+	}
+	
+	freeze = false;
+}
+
+void Ball::Update(float deltaTime) {
+	speed = min_speed + (max_speed - min_speed) * pow(abs(paddle->rect.y - rect.y) / (float)window_height, 1.5);
+	
+	if (freeze) {
+		rect.x = paddle->rect.x + (paddle->rect.w - rect.w) / 2;
+	}
 }
 
 void Ball::Reset() {
@@ -32,8 +61,9 @@ void Ball::Reset() {
 	}
 	
 	lives--;
-	rect.x = spawn_point.x;
-	rect.y = spawn_point.y;
+	rect.x = paddle->rect.x + (paddle->rect.w - rect.w) / 2;
+	rect.y = paddle->rect.y - (paddle->rect.h + rect.h) / 2 - 4;
+	freeze = true;
 }
 
 void Ball::SetPosition(int x, int y, bool spawn) {
@@ -48,22 +78,7 @@ void Ball::SetPosition(int x, int y, bool spawn) {
 
 void Ball::OnCollision(GameObject* other, CollisionInfo info) {
 	switch (other->tag) {
-		case TPaddle:
-			if (info.vertical()) {
-				move_direction.y *= -1;
-			} else {
-				move_direction.x *= -1;
-			}
-			break;
-			
 		case TBrick:
-			if (info.vertical()) {
-				move_direction.y *= -1;
-			}
-			if (info.horisontal()){
-				move_direction.x *= -1;
-			}
-			
 			brick_hit(other);
 			break;
 			
@@ -72,6 +87,15 @@ void Ball::OnCollision(GameObject* other, CollisionInfo info) {
 	}
 	
 	if (other->solid) {
+		// Bounce
+		if (info.vertical()) {
+			move_direction.y *= -1;
+		}
+		if (info.horisontal()){
+			move_direction.x *= -1;
+		}
+		
+		// Stop solid objects intersecting
 		if (info.from_left) {
 			rect.x = other->rect.x+other->rect.w;
 		}
